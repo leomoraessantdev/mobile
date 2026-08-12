@@ -25,9 +25,10 @@ um único paciente de demonstração criado pelo seeder.
 
 - React Native 0.86 com Expo SDK 57
 - JavaScript (sem TypeScript)
-- React Navigation (native stack)
-- Axios
-- react-native-calendars
+- React Navigation (native stack) para a navegação
+- Axios para as chamadas HTTP
+- react-native-calendars para a escolha de data
+- Estado e formulários com os próprios recursos do React, sem biblioteca
 
 ## Estrutura
 
@@ -323,6 +324,25 @@ funções ficam em `src/api/`, sobre uma instância única do Axios cuja `baseUR
 vem de `src/utils/config.js`. O hook `useApiData` cuida do ciclo
 carregando / erro / conteúdo e do pull-to-refresh, o que evita repetir o mesmo
 `useState` de três estados em cada tela.
+
+**Navegação.** React Navigation com native stack. O fluxo é linear — uma tela
+por etapa, todas precisando voltar para a anterior — e é exatamente isso que uma
+pilha faz. Abas ou drawer não se justificam com apenas dois caminhos saindo da
+Home. A stack nativa usa os componentes de navegação de cada plataforma, então a
+transição e o gesto de voltar são os que o usuário já conhece do sistema.
+
+**Estado.** Nenhuma biblioteca. Todo o estado é local à tela — as seleções de
+cada etapa, o filtro do histórico, o resultado da última requisição — e as
+escolhas do agendamento viajam como parâmetros de rota até a revisão. Não há
+dado compartilhado entre telas distantes, que é o problema que Redux, Zustand ou
+Context resolveriam. O que de fato se repetia era o ciclo carregando / erro /
+conteúdo, e isso foi extraído no hook `useApiData`.
+
+**Formulários.** Nenhuma biblioteca. O único campo de texto livre é
+"observações"; o resto do fluxo é seleção guiada, com o botão de avançar
+bloqueado enquanto falta uma escolha. Formik ou React Hook Form pesariam mais do
+que o `useState` e a checagem única que este formulário precisa — e a validação
+que decide alguma coisa está no backend.
 
 **Tratamento de erros.** `toFriendlyMessage()` é o único ponto que interpreta
 falhas de requisição: prioriza o primeiro erro de validação, depois a mensagem
