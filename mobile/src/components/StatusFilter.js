@@ -15,6 +15,7 @@ export default function StatusFilter({ value, onChange }) {
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
+      style={styles.bar}
       contentContainerStyle={styles.container}
     >
       {OPTIONS.map((option) => {
@@ -41,6 +42,12 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
+  },
+  bar: {
+    flexGrow: 0,
+    backgroundColor: colors.surface,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.border,
   },
   chip: {
     borderRadius: radius.pill,

@@ -42,10 +42,12 @@ class StoreAppointmentRequest extends FormRequest
                     return;
                 }
 
+                // startOfMinute porque createFromFormat completa os segundos
+                // que faltam no formato com o relógio do momento.
                 $slot = CarbonImmutable::createFromFormat(
                     'Y-m-d H:i',
                     $this->string('appointment_date').' '.$this->string('appointment_time'),
-                );
+                )->startOfMinute();
 
                 if ($slot->isPast()) {
                     $validator->errors()->add(

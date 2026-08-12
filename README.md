@@ -74,12 +74,17 @@ cd backend
 composer install
 cp .env.example .env
 php artisan key:generate
-php artisan migrate --seed
+php artisan migrate --seed --force
 php artisan serve --host=0.0.0.0 --port=8000
 ```
 
-O `--host=0.0.0.0` é importante: sem ele o servidor só aceita conexões da
-própria máquina e o celular não consegue alcançar a API.
+Duas observações sobre esses comandos:
+
+- O `--force` no `migrate` evita a pergunta de confirmação e faz o Laravel criar
+  o arquivo `database/database.sqlite` na primeira execução. Sem ele o comando
+  funciona igual, só pede confirmação antes de criar o banco.
+- O `--host=0.0.0.0` no `serve` é importante: sem ele o servidor só aceita
+  conexões da própria máquina e o celular não consegue alcançar a API.
 
 Para rodar os testes:
 
@@ -90,13 +95,13 @@ php artisan test
 ## Banco
 
 SQLite, escolhido para que a avaliação não dependa de nenhum serviço externo.
-O arquivo fica em `backend/database/database.sqlite` e é criado automaticamente
-pelo primeiro `php artisan migrate`.
+O arquivo fica em `backend/database/database.sqlite` e é criado pelo próprio
+`php artisan migrate` na primeira execução — não é preciso criar nada à mão.
 
 Para recomeçar do zero a qualquer momento:
 
 ```bash
-php artisan migrate:fresh --seed
+php artisan migrate:fresh --seed --force
 ```
 
 Os seeders são idempotentes — rodar `php artisan db:seed` de novo não duplica
@@ -358,7 +363,8 @@ datas passadas e o comportamento é idêntico nas três plataformas.
 - [x] Datas passadas bloqueadas no calendário
 - [x] Tela de confirmação com caminhos para a consulta, o histórico e o início
 - [x] Histórico com filtro por status consultado na API
-- [x] Pull-to-refresh e recarga ao voltar dos detalhes
+- [x] Atualização manual por botão no cabeçalho e por pull-to-refresh
+- [x] Recarga automática ao voltar dos detalhes
 - [x] Estados de carregando, erro (com "tentar novamente") e vazio em todas as telas
 - [x] Detalhes completos com botão de cancelar apenas quando permitido
 - [x] Cancelamento com confirmação e retorno visual
@@ -388,7 +394,8 @@ aberto:
 10. Toque nela para abrir os detalhes.
 11. Toque em **Cancelar consulta** e confirme no diálogo. O status muda para
     `Cancelado`, o aviso de sucesso aparece e o botão some.
-12. Volte ao histórico e filtre por **Cancelado** para ver a consulta lá.
+12. Volte ao histórico e filtre por **Cancelado** para ver a consulta lá. O
+    botão ↻ no cabeçalho recarrega a lista a qualquer momento.
 
 ### Testando o conflito de horário (RN-02)
 

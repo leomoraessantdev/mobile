@@ -1,6 +1,7 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, RefreshControl, StyleSheet } from 'react-native';
 
 import AppointmentCard from '../components/AppointmentCard';
 import Screen from '../components/Screen';
@@ -8,7 +9,7 @@ import StatusFilter from '../components/StatusFilter';
 import { EmptyState, ErrorState, LoadingState } from '../components/StateView';
 import useApiData from '../hooks/useApiData';
 import { fetchAppointments } from '../api/appointments';
-import { colors, spacing, typography } from '../theme';
+import { colors, spacing } from '../theme';
 import { DEMO_PATIENT } from '../utils/config';
 
 const EMPTY_DESCRIPTIONS = {
@@ -42,6 +43,24 @@ export default function HistoryScreen({ navigation }) {
   useEffect(() => {
     refreshRef.current = refresh;
   }, [refresh]);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () =>
+        refreshing ? (
+          <ActivityIndicator color={colors.primary} />
+        ) : (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Atualizar lista de consultas"
+            onPress={refresh}
+            hitSlop={12}
+          >
+            <Ionicons name="refresh" size={22} color={colors.primaryDark} />
+          </Pressable>
+        ),
+    });
+  }, [navigation, refresh, refreshing]);
 
   const firstFocus = useRef(true);
   useFocusEffect(
@@ -87,10 +106,7 @@ export default function HistoryScreen({ navigation }) {
 
   return (
     <Screen>
-      <View style={styles.header}>
-        <Text style={styles.hint}>Puxe a lista para baixo para atualizar.</Text>
-        <StatusFilter value={status} onChange={setStatus} />
-      </View>
+      <StatusFilter value={status} onChange={setStatus} />
 
       {renderBody()}
     </Screen>
@@ -98,16 +114,6 @@ export default function HistoryScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    backgroundColor: colors.surface,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.border,
-  },
-  hint: {
-    ...typography.caption,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.md,
-  },
   list: {
     flexGrow: 1,
     padding: spacing.lg,
